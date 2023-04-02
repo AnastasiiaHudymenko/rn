@@ -17,7 +17,7 @@ const initialState = {
   password: "",
 };
 
-export const Login = () => {
+export const Login = ({ navigation }) => {
   const [auth, setAuth] = useState(initialState);
   const [showPassford, setShowPassword] = useState(true);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
@@ -100,7 +100,10 @@ export const Login = () => {
                 <Text style={styles.btnTitle}>Войти</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate("Register")}
+              >
                 <Text style={styles.linkTitle}>
                   Нет аккаунта? Зарегистрироваться
                 </Text>

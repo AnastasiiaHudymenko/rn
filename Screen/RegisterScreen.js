@@ -28,7 +28,7 @@ const Icon = createIconSetFromIcoMoon(
   "icomoon.ttf"
 );
 
-export const Registration = () => {
+export const Registration = ({ navigation }) => {
   const [auth, setAuth] = useState(initialState);
   const [showPassford, setShowPassword] = useState(true);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
@@ -81,7 +81,7 @@ export const Registration = () => {
                   />
                 )}
                 <TouchableOpacity
-                  style={{ position: "absolute", bottom: 14, right: -15 }}
+                  style={{ position: "absolute", bottom: 14, right: -14 }}
                   onPress={pickImage}
                 >
                   {!image ? (
@@ -166,7 +166,10 @@ export const Registration = () => {
               >
                 <Text style={styles.btnTitle}>Зарегистрироваться</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate("Login")}
+              >
                 <Text style={styles.linkTitle}>Уже есть аккаунт? Войти</Text>
               </TouchableOpacity>
             </View>

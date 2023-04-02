@@ -1,8 +1,12 @@
 import { useFonts } from "expo-font";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Login } from "./Screen/LoginScreen";
 import { Registration } from "./Screen/RegisterScreen";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [iconLoaded] = useFonts({
@@ -23,10 +27,15 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* <Login /> */}
-      <Registration />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{ headerBackVisible: false, headerShown: false }}
+      >
+        <Stack.Screen name="Register" component={Registration} />
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
