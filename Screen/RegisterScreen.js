@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-
+import { useDispatch } from "react-redux";
+import { authSignUpUser } from "../redux/auth/authOperations";
 import {
   View,
   StyleSheet,
@@ -36,6 +37,8 @@ export const Registration = ({ navigation }) => {
   const [isFocusedLogin, setIsFocusedLogin] = useState(false);
   const [image, setImage] = useState(null);
 
+  const dispatch = useDispatch();
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -50,6 +53,7 @@ export const Registration = ({ navigation }) => {
   };
 
   const handlClickBtn = () => {
+    dispatch(authSignUpUser(auth));
     setAuth(initialState);
 
     console.log(auth);

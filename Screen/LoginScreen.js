@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { authSignInUser } from "../redux/auth/authOperations";
+import { useDispatch } from "react-redux";
 import {
   View,
   StyleSheet,
@@ -22,8 +24,10 @@ export const Login = ({ navigation }) => {
   const [showPassford, setShowPassword] = useState(true);
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPasword] = useState(false);
+  const dispatch = useDispatch();
 
   const handlClickBtn = () => {
+    dispatch(authSignInUser(auth));
     setAuth(initialState);
   };
 
