@@ -8,10 +8,6 @@ import { useRoute } from "../router";
 import { authSlice } from "../redux/auth/authReducer";
 
 export const Main = () => {
-  // const [user, setUser] = useState();
-  // onAuthStateChanged(auth, (user) => {
-  //   setUser(user);
-  // });
   const dispatch = useDispatch();
   const { stateChange } = useSelector((state) => state.auth);
 
