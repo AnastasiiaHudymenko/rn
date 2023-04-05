@@ -17,6 +17,8 @@ export const Main = () => {
         const userUpdateProfile = {
           login: user.displayName,
           userId: user.uid,
+          userAvatar: user.photoURL,
+          userEmail: user.email,
         };
         dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
         dispatch(authSlice.actions.authStateChange({ stateChange: true }));

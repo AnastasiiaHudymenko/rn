@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/config";
 import { useDispatch } from "react-redux";
 import { authSignUpUser } from "../redux/auth/authOperations";
 import {
@@ -21,6 +23,7 @@ const initialState = {
   login: "",
   email: "",
   password: "",
+  avatar: null,
 };
 
 const Icon = createIconSetFromIcoMoon(
@@ -35,7 +38,7 @@ export const Registration = ({ navigation }) => {
   const [isFocusedEmail, setIsFocusedEmail] = useState(false);
   const [isFocusedPassword, setIsFocusedPasword] = useState(false);
   const [isFocusedLogin, setIsFocusedLogin] = useState(false);
-  const [image, setImage] = useState(null);
+  const [avatar, setAvatar] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -48,15 +51,42 @@ export const Registration = ({ navigation }) => {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setAvatar(result.assets[0].uri);
     }
   };
 
-  const handlClickBtn = () => {
-    dispatch(authSignUpUser(auth));
-    setAuth(initialState);
+  const uploadAvatarToServer = async (photo) => {
+    const response = await fetch(photo);
 
-    console.log(auth);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storageRef = await ref(storage, `avatar/${uniquePostId}`);
+
+    const uploadPhoto = await uploadBytes(storageRef, file);
+
+    const takePhoto = await getDownloadURL(uploadPhoto.ref);
+
+    return takePhoto;
+  };
+
+  const handlClickBtn = async () => {
+    try {
+      const refAvatar = await uploadAvatarToServer(avatar);
+
+      const newAuth = {
+        avatar: refAvatar,
+        login: auth.login,
+        email: auth.email,
+        password: auth.password,
+      };
+      dispatch(authSignUpUser(newAuth));
+
+      setAuth(initialState);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const togleShowPassword = () => {
@@ -78,9 +108,9 @@ export const Registration = ({ navigation }) => {
           >
             <View style={styles.form}>
               <View style={styles.photoWrapp}>
-                {image && (
+                {avatar && (
                   <Image
-                    source={{ uri: image }}
+                    source={{ uri: avatar }}
                     style={{ width: 120, height: 120, borderRadius: 16 }}
                   />
                 )}
@@ -88,7 +118,7 @@ export const Registration = ({ navigation }) => {
                   style={{ position: "absolute", bottom: 14, right: -14 }}
                   onPress={pickImage}
                 >
-                  {!image ? (
+                  {!avatar ? (
                     <Icon
                       name="plus_icon"
                       size={27}

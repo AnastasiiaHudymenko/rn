@@ -9,21 +9,25 @@ import { authSlice } from "./authReducer";
 import { auth } from "../../firebase/config";
 
 export const authSignUpUser =
-  ({ email, password, login }) =>
+  ({ email, password, login, avatar }) =>
   async (dispatch, getState) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
       const updateUser = await updateProfile(user, {
         displayName: login,
-        // photoURL: "https://example.com/jane-q-user/profile.jpg",
+        photoURL: avatar,
       });
 
-      const { uid, displayName } = await auth.currentUser;
+      const { uid, displayName, photoURL } = await auth.currentUser;
       const userUpdateProfile = {
         login: displayName,
         userId: uid,
+        userAvatar: photoURL,
+        userEmail: email,
       };
+
+      console.log("userUpdateProfile", userUpdateProfile);
 
       dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
     } catch (error) {
@@ -48,6 +52,7 @@ export const authSignInUser =
 export const authStateChanfeUser = async (dispatch, getState) => {
   await onAuthStateChanged(auth, async (user) => {
     if (user) {
+      console.log(user);
       const userUpdateProfile = {
         login: user.displayName,
         userId: user.uid,

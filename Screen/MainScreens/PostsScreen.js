@@ -22,10 +22,9 @@ const Icon = createIconSetFromIcoMoon(
 export const PostsScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
 
-  const { userId } = useSelector((state) => state.auth);
+  const { login, userEmail, userAvatar } = useSelector((state) => state.auth);
 
   const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
 
   const getDataFromFirestore = async () => {
     const dbRef = await collection(db, "posts");
@@ -43,6 +42,13 @@ export const PostsScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.wrappContent}>
+        <View style={styles.containerUserProfile}>
+          <Image style={styles.userImg} source={{ uri: userAvatar }} />
+          <View style={{ marginLeft: 8 }}>
+            <Text style={styles.userName}>{login}</Text>
+            <Text style={styles.userEmail}>{userEmail}</Text>
+          </View>
+        </View>
         <FlatList
           data={posts}
           keyExtractor={(item, i) => i.toString()}
@@ -56,24 +62,19 @@ export const PostsScreen = ({ navigation, route }) => {
                   height: screenWidth * 0.65,
                 }}
               />
-              <View style={{ marginTop: 8, marginBottom: 11 }}>
+              <View style={styles.wrappPlaceTitle}>
                 {posts.length !== 0 && (
                   <Text style={styles.placeTitle}>{item.place}</Text>
                 )}
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
+              <View style={styles.wrapIconComment}>
                 <TouchableOpacity
-                // onPress={() => {
-                //   navigation.navigate("Comments", {
-                //     postId: item.id,
-                //     photo: item.photoStorage,
-                //   });
-                // }}
+                  onPress={() => {
+                    navigation.navigate("Comments", {
+                      postId: item.id,
+                      photo: item.photoStorage,
+                    });
+                  }}
                 >
                   <Icon
                     name="message-orange"
@@ -81,12 +82,12 @@ export const PostsScreen = ({ navigation, route }) => {
                     color="rgba(33, 33, 33, 0.3)"
                   />
                 </TouchableOpacity>
-                <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <View style={styles.wrappIconMap}>
                   <TouchableOpacity
                     style={{ marginRight: 8 }}
-                    // onPress={() => {
-                    //   navigation.navigate("Map", { location: item.location });
-                    // }}
+                    onPress={() => {
+                      navigation.navigate("Map", { location: item.location });
+                    }}
                   >
                     <Icon name="map" size={20} color="rgba(33, 33, 33, 0.8)" />
                   </TouchableOpacity>
@@ -116,18 +117,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 
+  containerUserProfile: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 32,
+  },
+
+  userImg: { width: 60, height: 60, borderRadius: 16 },
+
+  userName: { color: "#212121", fontWeight: 700, fontSize: 13, lineHeight: 15 },
+
+  userEmail: { fontSize: 11, lineHeight: 13, color: "rgba(33, 33, 33, 0.8)" },
+
   wrappContent: {
     marginTop: 32,
   },
+
+  wrappPlaceTitle: { marginTop: 8, marginBottom: 11 },
 
   wrapImg: {
     marginBottom: 34,
   },
 
+  wrapIconComment: { flexDirection: "row", justifyContent: "space-between" },
+
+  wrappIconMap: { flexDirection: "row", alignItems: "flex-end" },
+
   img: {
     width: 280,
     height: 200,
-    // resizeMode: "cover",
     borderRadius: 8,
     overflow: "hidden",
   },

@@ -12,7 +12,7 @@ import { Camera } from "expo-camera";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
-import { auth, db, storage } from "../../firebase/config";
+import { db, storage } from "../../firebase/config";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
 import { createIconSetFromIcoMoon } from "@expo/vector-icons";
@@ -84,8 +84,8 @@ export function CreatePostsScreen({ navigation }) {
     return takePhoto;
   };
 
-  const sendPhoto = () => {
-    writeDataToFirestore(photo);
+  const sendPhoto = async () => {
+    await writeDataToFirestore(photo);
     navigation.navigate("Posts", { photo });
     setPhoto("");
     setPlace("");
@@ -105,7 +105,6 @@ export function CreatePostsScreen({ navigation }) {
         photoLocationName,
         liks: 0,
       });
-      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }

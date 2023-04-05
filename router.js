@@ -3,8 +3,11 @@ import { useFonts } from "expo-font";
 import { Registration } from "./Screen/RegisterScreen";
 import { Login } from "./Screen/LoginScreen";
 import { HomePage } from "./Screen/MainScreens/Home";
+import { CommentsScreen } from "./Screen/MainScreens/CommentsScreen";
+import { MapScreen } from "./Screen/MainScreens/MapScreen";
 
 const AuthStack = createStackNavigator();
+const MainStack = createStackNavigator();
 
 export const useRoute = (isAuth) => {
   const [fontsLoaded] = useFonts({
@@ -28,8 +31,8 @@ export const useRoute = (isAuth) => {
   }
 
   return (
-    <AuthStack.Navigator initialRouteName="Home">
-      <AuthStack.Screen
+    <MainStack.Navigator initialRouteName="Home">
+      <MainStack.Screen
         options={{
           headerShown: false,
           tabBarShowLabel: false,
@@ -37,7 +40,23 @@ export const useRoute = (isAuth) => {
         name="Home"
         component={HomePage}
       />
-    </AuthStack.Navigator>
+      <MainStack.Screen
+        options={{
+          headerTitleAlign: "center",
+          title: "Коментарии",
+        }}
+        name="Comments"
+        component={CommentsScreen}
+      />
+      <MainStack.Screen
+        options={{
+          headerTitleAlign: "center",
+          title: "Карта",
+        }}
+        name="Map"
+        component={MapScreen}
+      />
+    </MainStack.Navigator>
   );
 };
 

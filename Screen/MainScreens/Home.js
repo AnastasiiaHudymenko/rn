@@ -47,7 +47,7 @@ export const HomePage = () => {
           headerLeft: () => (
             <TouchableOpacity
               style={styles.arrowLeft}
-              onPress={() => navigation.navigate("Post")}
+              onPress={() => navigation.navigate("Posts")}
             >
               <Icon name="arrow-back" size={20} color="rgba(33, 33, 33, 0.8)" />
             </TouchableOpacity>
