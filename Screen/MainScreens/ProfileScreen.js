@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { db } from "../../firebase/config";
 import { authSignOutUser } from "../../redux/auth/authOperations";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  increment,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import {
   Text,
   View,
@@ -22,41 +30,18 @@ const Icon = createIconSetFromIcoMoon(
 );
 
 export const ProfileScreen = ({ navigation }) => {
-  const [photos, setPhotos] = useState([]);
-  const [likes, setLikes] = useState([]);
-  const [localLiks, setLocalLiks] = useState([]);
+  const [posts, setPosts] = useState([]);
   const { userId, login, userAvatar } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  // const liksPost = async () => {
-  //   console.log("photos in LIKEPOST", photos);
-  //   const myLikes = await photos.map(({ liks }) => liks);
 
-  //   console.log(myLikes);
-  //   // setLikes(myLikes);
-  //   setLocalLiks(myLikes);
-  // };
   const screenWidth = Dimensions.get("window").width;
 
-  // const updateDataInFirestore = async (collectionName, docId, num) => {
-  //   try {
-  //     const ref = await db.collection(collectionName).doc(docId);
-  //     ref.update({
-  //       liks: num + 1,
-  //     });
-  //     console.log("document updated");
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const handleLike = async (item) => {
+    const postLiksRef = doc(db, "posts", item.id);
 
-  const handleLike = async (index, item) => {
-    const newLikes = [...localLiks];
-    newLikes[index] += 1;
-    setLocalLiks(newLikes);
-    // const newLikes = [...likes];
-    // console.log("likes", likes);
-    // console.log("newLikes[index]", newLikes[index]);
-    // await updateDataInFirestore("posts", item.id, newLikes[index]);
+    await updateDoc(postLiksRef, {
+      liks: increment(1),
+    });
   };
 
   useEffect(() => {
@@ -66,13 +51,14 @@ export const ProfileScreen = ({ navigation }) => {
   const getUserPosts = async () => {
     const q = query(collection(db, "posts"), where("userId", "==", userId));
     onSnapshot(q, (docSnap) =>
-      setPhotos(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+      setPosts(docSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
     );
   };
 
   const signOut = () => {
     dispatch(authSignOutUser());
   };
+
   return (
     <ImageBackground
       style={styles.imageBg}
@@ -91,7 +77,7 @@ export const ProfileScreen = ({ navigation }) => {
             <Text style={styles.userTitle}>{login}</Text>
           </View>
           <FlatList
-            data={photos}
+            data={posts}
             keyExtractor={(_, i) => i.toString()}
             renderItem={({ index, item }) => (
               <View style={styles.wrapImg}>
@@ -104,7 +90,7 @@ export const ProfileScreen = ({ navigation }) => {
                   }}
                 />
                 <View style={styles.wrappContentPost}>
-                  {photos.length !== 0 && (
+                  {posts.length !== 0 && (
                     <Text style={styles.placeTitle}>{item.place}</Text>
                   )}
                 </View>
@@ -121,12 +107,19 @@ export const ProfileScreen = ({ navigation }) => {
                       <Icon
                         name="message-orange"
                         size={24}
-                        color="rgba(33, 33, 33, 0.3)"
+                        color={
+                          !item.comments
+                            ? "rgba(33, 33, 33, 0.3)"
+                            : "rgba(255, 108, 0, 1)"
+                        }
                       />
                     </TouchableOpacity>
+                    <View style={styles.wrapCountComment}>
+                      <Text style={styles.countComment}>{item.comments}</Text>
+                    </View>
                     <TouchableOpacity
                       style={styles.iconThumbUp}
-                      // onPress={() => handleLike(index, item)}
+                      onPress={() => handleLike(item)}
                     >
                       <Icon name="thumbs-up" size={24} color="orange" />
                     </TouchableOpacity>
@@ -144,7 +137,7 @@ export const ProfileScreen = ({ navigation }) => {
                           lineHeight: 19,
                         }}
                       >
-                        {/* {localLiks[index]} */}
+                        {item.liks}
                       </Text>
                     </View>
                   </View>
@@ -162,7 +155,7 @@ export const ProfileScreen = ({ navigation }) => {
                         color="rgba(33, 33, 33, 0.8)"
                       />
                     </TouchableOpacity>
-                    {photos.length !== 0 && (
+                    {posts.length !== 0 && (
                       <Text style={styles.nameLocation}>
                         {item.photoLocationName}
                       </Text>
@@ -189,6 +182,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    paddingBottom: 150,
   },
 
   wrappAvatar: {
@@ -206,11 +200,16 @@ const styles = StyleSheet.create({
     marginBottom: 11,
   },
 
+  countComment: { fontSize: 16, lineHeight: 19 },
+
   btnSignOut: {
     position: "absolute",
     right: 0,
     top: 20,
+    zIndex: 1000,
   },
+
+  wrapCountComment: { marginLeft: 5, justifyContent: "center" },
 
   wrappContentIcon: {
     flex: 1,
@@ -229,9 +228,10 @@ const styles = StyleSheet.create({
   },
 
   placeTitle: {
+    color: "#212121",
+    fontWeight: 500,
     fontSize: 16,
     lineHeight: 19,
-    color: "#212121",
   },
 
   nameLocation: {
@@ -243,7 +243,8 @@ const styles = StyleSheet.create({
 
   wrappIconMap: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
+    marginRight: 15,
   },
 
   wrappIcon: {

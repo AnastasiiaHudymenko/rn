@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase/config";
-import { collection, getDocs, onSnapshot, doc } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import {
   Text,
   View,
@@ -68,20 +68,30 @@ export const PostsScreen = ({ navigation, route }) => {
                 )}
               </View>
               <View style={styles.wrapIconComment}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("Comments", {
-                      postId: item.id,
-                      photo: item.photoStorage,
-                    });
-                  }}
-                >
-                  <Icon
-                    name="message-orange"
-                    size={24}
-                    color="rgba(33, 33, 33, 0.3)"
-                  />
-                </TouchableOpacity>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("Comments", {
+                        postId: item.id,
+                        photo: item.photoStorage,
+                      });
+                    }}
+                  >
+                    <Icon
+                      name="message-orange"
+                      size={24}
+                      color={
+                        !item.comments
+                          ? "rgba(33, 33, 33, 0.3)"
+                          : "rgba(255, 108, 0, 1)"
+                      }
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.wrapCountComment}>
+                    <Text style={styles.countComment}>{item.comments}</Text>
+                  </View>
+                </View>
+
                 <View style={styles.wrappIconMap}>
                   <TouchableOpacity
                     style={{ marginRight: 8 }}
@@ -123,6 +133,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
 
+  wrapCountComment: { marginLeft: 5, justifyContent: "center" },
+
+  countComment: { fontSize: 16, lineHeight: 19 },
+
   userImg: { width: 60, height: 60, borderRadius: 16 },
 
   userName: { color: "#212121", fontWeight: 700, fontSize: 13, lineHeight: 15 },
@@ -133,7 +147,10 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
 
-  wrappPlaceTitle: { marginTop: 8, marginBottom: 11 },
+  wrappPlaceTitle: {
+    marginTop: 8,
+    marginBottom: 11,
+  },
 
   wrapImg: {
     marginBottom: 34,
@@ -141,7 +158,11 @@ const styles = StyleSheet.create({
 
   wrapIconComment: { flexDirection: "row", justifyContent: "space-between" },
 
-  wrappIconMap: { flexDirection: "row", alignItems: "flex-end" },
+  wrappIconMap: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    marginRight: 10,
+  },
 
   img: {
     width: 280,
@@ -151,9 +172,10 @@ const styles = StyleSheet.create({
   },
 
   placeTitle: {
+    color: "#212121",
+    fontWeight: 500,
     fontSize: 16,
     lineHeight: 19,
-    color: "#212121",
   },
 
   nameLocation: {

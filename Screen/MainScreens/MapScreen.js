@@ -1,15 +1,5 @@
-import { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
-import {
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Platform,
-} from "react-native";
+import { View } from "react-native";
 
 export const MapScreen = ({ route }) => {
   const { latitude, longitude } = route.params.location;

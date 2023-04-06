@@ -59,28 +59,3 @@ export const useRoute = (isAuth) => {
     </MainStack.Navigator>
   );
 };
-
-// const styles = StyleSheet.create({
-//   containerTabNav: {
-//     justifyContent: "center",
-//     alignItems: "center",
-//     width: 70,
-//     height: 40,
-//     backgroundColor: "#FF6C00",
-//     borderRadius: 20,
-//   },
-//   logOutBtn: {
-//     marginRight: 10,
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-
-//   arrowLeft: {
-//     marginLeft: 16,
-
-//     // flex: 1,
-//     // justifyContent: "center",
-//     // alignItems: "center",
-//   },
-// });

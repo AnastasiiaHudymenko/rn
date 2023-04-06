@@ -19,6 +19,7 @@ import {
   SafeAreaView,
   FlatList,
   Image,
+  Platform,
 } from "react-native";
 
 const Icon = createIconSetFromIcoMoon(
@@ -70,15 +71,52 @@ export const CommentsScreen = ({ route }) => {
     }
   };
 
-  // const getAllPosts = async () => {
-  //   await db
-  //     .collection("posts")
-  //     .doc(postId)
-  //     .collection("comments")
-  //     .onSnapshot((data) =>
-  //       setAllComments(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
-  //     );
-  // };
+  const markupComment = (item) => {
+    if (item.userId === userId) {
+      return (
+        <View
+          style={{
+            ...styles.containerImgComent,
+            marginLeft: Platform.OS === "ios" ? 0 : 90,
+          }}
+        >
+          <View
+            style={{
+              ...styles.commentContainer,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 0,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+            }}
+          >
+            <Text style={styles.commentText}>{item.comment}</Text>
+            <Text style={styles.commentData}>{item.formatData}</Text>
+          </View>
+          <Image
+            style={{ ...styles.userAvatarImg, marginRight: 0, marginLeft: 5 }}
+            source={{
+              uri: item.userAvatar,
+            }}
+          />
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.containerImgComent}>
+          <Image
+            style={styles.userAvatarImg}
+            source={{
+              uri: item.userAvatar,
+            }}
+          />
+          <View style={styles.commentContainer}>
+            <Text style={styles.commentText}>{item.comment}</Text>
+            <Text style={styles.commentData}>{item.formatData}</Text>
+          </View>
+        </View>
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -89,26 +127,7 @@ export const CommentsScreen = ({ route }) => {
 
         <FlatList
           data={allComments}
-          renderItem={({ item }) => (
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <Image
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 100,
-                  marginRight: 16,
-                }}
-                source={{
-                  uri: item.userAvatar,
-                }}
-              />
-              <View style={styles.commentContainer}>
-                <Text>{item.login}</Text>
-                <Text style={styles.commentText}>{item.comment}</Text>
-                <Text style={styles.commentData}>{item.formatData}</Text>
-              </View>
-            </View>
-          )}
+          renderItem={({ item }) => markupComment(item)}
           keyExtractor={(_, i) => i.toString()}
         />
         <View style={styles.inputContainer}>
@@ -155,8 +174,8 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingBottom: 32,
-    width: 299,
+    paddingBottom: 16,
+    width: 250,
     backgroundColor: "rgba(0, 0, 0, 0.03)",
     marginBottom: 24,
     borderTopRightRadius: 8,
@@ -206,4 +225,10 @@ const styles = StyleSheet.create({
     lineHeight: 12,
     textAlign: "right",
   },
+
+  containerImgComent: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  userAvatarImg: { width: 28, height: 28, borderRadius: 100, marginRight: 5 },
 });
